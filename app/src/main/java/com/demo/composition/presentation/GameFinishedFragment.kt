@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import com.demo.composition.R
+import androidx.fragment.app.FragmentManager
 import com.demo.composition.databinding.FragmentGameFinishedBinding
 import com.demo.composition.domain.entity.GameResult
 
@@ -33,10 +34,13 @@ class GameFinishedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvRequiredAnswers.text = String.format(
-            resources.getString(R.string.required_score),
-            gameResult.countOfCorrectAnswers.toString()
-        )
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    retryGame()
+                }
+            })
     }
 
     override fun onDestroyView() {
@@ -46,6 +50,13 @@ class GameFinishedFragment : Fragment() {
 
     private fun parseArgs() {
         gameResult = requireArguments().getSerializable(KEY_GAME_RESULT) as GameResult
+    }
+
+    private fun retryGame() {
+        requireActivity().supportFragmentManager.popBackStack(
+            GameFragment.NAME,
+            FragmentManager.POP_BACK_STACK_INCLUSIVE
+        )
     }
 
     companion object {
