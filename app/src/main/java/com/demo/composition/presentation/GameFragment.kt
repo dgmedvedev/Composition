@@ -1,5 +1,6 @@
 package com.demo.composition.presentation
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -61,7 +62,9 @@ class GameFragment : Fragment() {
     }
 
     private fun parseArgs() {
-        level = requireArguments().getSerializable(KEY_LEVEL) as Level
+        requireArguments().getParcelable<Level>(KEY_LEVEL)?.let {
+            level = it
+        }
     }
 
     companion object {
@@ -71,7 +74,7 @@ class GameFragment : Fragment() {
         fun newInstance(level: Level): GameFragment {
             return GameFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(KEY_LEVEL, level)
+                    putParcelable(KEY_LEVEL, level)
                 }
             }
         }
