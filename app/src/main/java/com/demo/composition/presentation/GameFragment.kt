@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.demo.composition.R
 import com.demo.composition.databinding.FragmentGameBinding
 import com.demo.composition.domain.entity.GameResult
@@ -17,7 +19,10 @@ import com.demo.composition.domain.entity.Question
 
 class GameFragment : Fragment() {
 
+    private val args by navArgs<GameFragmentArgs>()
+
     private val viewModelFactory: GameViewModelFactory by lazy {
+        val level = args.level
         GameViewModelFactory(requireActivity().application, level)
     }
     private val viewModel: GameViewModel by lazy {
@@ -35,16 +40,9 @@ class GameFragment : Fragment() {
         }
     }
 
-    private lateinit var level: Level
-
     private var _binding: FragmentGameBinding? = null
     private val binding: FragmentGameBinding
         get() = _binding ?: throw RuntimeException("FragmentGameBinding = null")
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        parseArgs()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -119,12 +117,6 @@ class GameFragment : Fragment() {
             .replace(R.id.main_container, GameFinishedFragment.newInstance(gameResult))
             .addToBackStack(null)
             .commit()
-    }
-
-    private fun parseArgs() {
-        requireArguments().getParcelable<Level>(KEY_LEVEL)?.let {
-            level = it
-        }
     }
 
     companion object {
