@@ -1,10 +1,10 @@
 package com.demo.composition.presentation
 
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.demo.composition.R
-
-var countOfCorrectAnswers = 0
+import com.demo.composition.domain.entity.GameResult
 
 @BindingAdapter("requiredAnswers")
 fun bindRequiredAnswers(textView: TextView, count: Int) {
@@ -15,31 +15,46 @@ fun bindRequiredAnswers(textView: TextView, count: Int) {
 }
 
 @BindingAdapter("scoreAnswers")
-fun bindScoreAnswers(textView: TextView, count: Int) {
+fun bindScoreAnswers(textView: TextView, score: Int) {
     textView.text = String.format(
         textView.context.getString(R.string.score_answers),
-        count
+        score
     )
-    countOfCorrectAnswers = count
 }
 
 @BindingAdapter("requiredPercentage")
-fun bindRequiredPercentage(textView: TextView, count: Int): Int {
+fun bindRequiredPercentage(textView: TextView, percentage: Int): Int {
     textView.text = String.format(
         textView.context.getString(R.string.required_percentage),
-        count
+        percentage
     )
-    return count
+    return percentage
 }
 
 @BindingAdapter("scorePercentage")
-fun bindScorePercentage(textView: TextView, countOfQuestions: Int) {
-    val count = if (countOfQuestions == 0) {
+fun bindScorePercentage(textView: TextView, gameResult: GameResult) {
+    textView.text = String.format(
+        textView.context.getString(R.string.score_percentage),
+        calculatePercentOfCorrectAnswers(gameResult)
+    )
+}
+
+private fun calculatePercentOfCorrectAnswers(gameResult: GameResult) = with(gameResult) {
+    if (countOfQuestions == 0) {
         0
     } else
         ((countOfCorrectAnswers / countOfQuestions.toDouble()) * 100).toInt()
-    textView.text = String.format(
-        textView.context.getString(R.string.score_percentage),
-        count
-    )
+}
+
+@BindingAdapter("emojiResult")
+fun bindEmojiResult(imageView: ImageView, winner: Boolean) {
+    imageView.setImageResource(getSmileResId(winner))
+}
+
+private fun getSmileResId(winner: Boolean): Int {
+    return if (winner) {
+        R.drawable.ic_smile
+    } else {
+        R.drawable.ic_sad
+    }
 }
